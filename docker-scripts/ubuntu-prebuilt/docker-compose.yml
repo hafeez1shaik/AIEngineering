@@ -1,0 +1,15 @@
+services:
+  ai-dev-station:
+    build: .
+    container_name: ai-dev-station
+    tty: true
+    stdin_open: true
+    ports:
+      - "6901:6901"
+      - "8000:8000"
+    shm_size: '2gb'
+    environment:
+      - VNC_PW=password123
+    # This calls the correct internal script and forces it to show logs
+#    command: ["/dockerstartup/startup.sh", "--tail-log"]
+    restart: unless-stopped
