@@ -1,15 +1,22 @@
+version: "3.9"
+
 services:
-  ai-dev-station:
+
+  dev-desktop:
     build: .
-    container_name: ai-dev-station
-    tty: true
-    stdin_open: true
+    container_name: dev-desktop
+
     ports:
-      - "6901:6901"
-      - "8000:8000"
-    shm_size: '2gb'
+      - "6080:6901"
+
     environment:
       - VNC_PW=password123
-    # This calls the correct internal script and forces it to show logs
-#    command: ["/dockerstartup/startup.sh", "--tail-log"]
+
+    volumes:
+      - ./workspace:/workspace
+      - ollama:/root/.ollama
+
     restart: unless-stopped
+
+volumes:
+  ollama:
