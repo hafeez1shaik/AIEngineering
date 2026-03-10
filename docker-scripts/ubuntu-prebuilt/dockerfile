@@ -2,6 +2,7 @@ FROM accetto/ubuntu-vnc-xfce-g3:24.04
 
 USER root
 
+# 1. Install base dependencies
 RUN apt-get update && apt-get install -y \
     openjdk-21-jdk \
     python3 \
@@ -11,12 +12,24 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     build-essential \
-    firefox \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# 2. Install code-server (FIXED URL)
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+# 3. Create a Startup Script for code-server
+# This ensures it runs automatically and is accessible from Windows
+RUN mkdir -p /dockerstartup && \
+    echo '#!/bin/bash\ncode-server --bind-addr 0.0.0.0:8080 --auth none &' > /dockerstartup/vnc_startup.sh && \
+    chmod +x /dockerstartup/vnc_startup.sh
+
+# 4. Tell the accetto image to run our script on boot
+ENV VNC_COL_STARTUP_SCRIPTS_PATH=/dockerstartup/vnc_startup.sh
 
 # python alias
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /workspace
+
+EXPOSE 6901 8080
